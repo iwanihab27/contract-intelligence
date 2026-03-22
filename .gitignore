@@ -1,9 +1,31 @@
+# Virtual environments
 venv/
 .venv/
+
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment variables - NEVER commit this
 .env
-uploads/
+
+# Uploads folder - no real files
+uploads/*
+!uploads/.gitkeep
+
+# Alembic versions - optional, some people commit these
 alembic/versions/
-*.egg-info/
+
+# IDE
 .idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
