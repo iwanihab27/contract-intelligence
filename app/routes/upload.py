@@ -9,7 +9,7 @@ from app.enums import ResponseEnums
 from app.schemas.contract import ContractCreate
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/v1/upload", tags=["Upload"])
+router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.post("/upload")
 def upload_contract(contract: ContractCreate = Depends(),file: UploadFile = File(...),db: Session = Depends(get_db),

@@ -5,10 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4c71e363-f0bc-45c3-9795-3edeb4c3d70d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alembic.ini" beforeDir="false" afterPath="$PROJECT_DIR$/alembic.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/report_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/report_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/core/startup.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/core/startup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/contracts.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/contracts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/process.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/process.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/query.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/query.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/report.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/upload.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/contract.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/contract.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

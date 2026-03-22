@@ -9,7 +9,7 @@ from app.enums import ResponseEnums
 from app.schemas.chat_history import ChatRequest
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/v1/query", tags=["Query"])
+router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.post("/query")
 def query_contract(request: ChatRequest,db: Session = Depends(get_db),

@@ -8,7 +8,7 @@ from app.core.config import Settings, get_settings
 from app.enums import ResponseEnums
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/v1/process", tags=["Process"])
+router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.post("/process/{contract_id}")
 def process_contract(contract_id: str,db: Session = Depends(get_db),
