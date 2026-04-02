@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.post("/process/{contract_id}")
-def process_contract(contract_id: str,db: Session = Depends(get_db),
+async def process_contract(contract_id: str,db: Session = Depends(get_db),
                      settings: Settings = Depends(get_settings)):
 
     logger.info(f"Processing contract: {contract_id}")

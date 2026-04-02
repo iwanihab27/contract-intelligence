@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.post("/upload")
-def upload_contract(contract: ContractCreate = Depends(),file: UploadFile = File(...),db: Session = Depends(get_db),
+async def upload_contract(contract: ContractCreate = Depends(),file: UploadFile = File(...),db: Session = Depends(get_db),
                     settings: Settings = Depends(get_settings)):
 
     logger.info(f"Uploading contract: {contract.name}")

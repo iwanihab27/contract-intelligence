@@ -1,21 +1,20 @@
+import asyncio
 import logging
 import json
 from groq import Groq
-from sqlalchemy.orm import Session
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.controllers.base_controller import BaseController
 from app.core.config import Settings
 
 logger = logging.getLogger(__name__)
 
-
 class GroqController(BaseController):
-    def __init__(self, db: Session, settings: Settings):
+    def __init__(self, db: AsyncSession, settings: Settings):
         super().__init__(db, settings)
         self.client = Groq(api_key=self.settings.GROQ_API_KEY)
         self.model = "llama-3.3-70b-versatile"
 
-    def analyze_contract(self, text: str) -> dict:
+    async def analyze_contract(self, text: str) -> dict:
         prompt = f"""
         You are a contract analyst. Analyze the following contract and return a JSON object with:
         1. summary: A brief 3-4 sentence summary
@@ -33,14 +32,15 @@ class GroqController(BaseController):
         Contract:
         {text}
         """
-        response = self.client.chat.completions.create(
+        response = await asyncio.to_thread(
+            self.client.chat.completions.create,
             model=self.model,
             messages=[{"role": "user", "content": prompt}]
         )
         logger.info("Contract analysis completed")
         return self._parse_json(response.choices[0].message.content)
 
-    def answer_question(self, question: str, chunks: list, contract_name: str) -> dict:
+    async def answer_question(self, question: str, chunks: list, contract_name: str) -> dict:
         context = "\n\n".join([f"[{c.payload.get('section_title', 'Unknown')}]: {c.payload.get('text', '')}" for c in chunks])
         prompt = f"""
         You are a contract analyst protecting the user's interests.
@@ -67,7 +67,8 @@ class GroqController(BaseController):
 
         Return ONLY a valid JSON object, no extra text.
         """
-        response = self.client.chat.completions.create(
+        response = await asyncio.to_thread(
+            self.client.chat.completions.create,
             model=self.model,
             messages=[{"role": "user", "content": prompt}]
         )

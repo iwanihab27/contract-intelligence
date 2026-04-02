@@ -1,7 +1,6 @@
 import os
-import uuid
 from fastapi import UploadFile
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.controllers.base_controller import BaseController
 from app.core.config import Settings
 from app.enums import FileEnums, ResponseEnums, ContractEnums
@@ -9,7 +8,7 @@ from app.models.contract import Contract
 
 
 class UploadController(BaseController):
-    def __init__(self, db: Session, settings: Settings):
+    def __init__(self, db: AsyncSession, settings: Settings):
         super().__init__(db, settings)
 
     def validate_file(self, file: UploadFile):
@@ -40,9 +39,9 @@ class UploadController(BaseController):
 
         return unique_name, file_path
 
-    def create_contract(self, name: str, file_name: str, file_path: str):
+    async def create_contract(self, name: str, file_name: str, file_path: str):
         contract = Contract(name=name, file_name=file_name, file_path=file_path, contract_type=ContractEnums.OTHER)
         self.db.add(contract)
-        self.db.commit()
-        self.db.refresh(contract)
+        await self.db.commit()
+        await self.db.refresh(contract)
         return contract

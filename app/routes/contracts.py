@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.get("")
-def get_contracts(db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
+async def get_contracts(db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
 
     controller = ContractsController(db=db, settings=settings)
     contracts = controller.get_all()
@@ -27,7 +27,7 @@ def get_contracts(db: Session = Depends(get_db),settings: Settings = Depends(get
 
 
 @router.delete("/{contract_id}")
-def delete_contract(contract_id: str,db: Session = Depends(get_db),
+async def delete_contract(contract_id: str,db: Session = Depends(get_db),
                     settings: Settings = Depends(get_settings)):
 
     logger.info(f"Deleting contract: {contract_id}")
@@ -47,7 +47,7 @@ def delete_contract(contract_id: str,db: Session = Depends(get_db),
 
 
 @router.post("/{contract_id}/reanalyze")
-def reanalyze_contract(contract_id: str,db: Session = Depends(get_db),
+async def reanalyze_contract(contract_id: str,db: Session = Depends(get_db),
                        settings: Settings = Depends(get_settings)):
 
     logger.info(f"Reanalyzing contract: {contract_id}")

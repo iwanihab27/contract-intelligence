@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.get("/{contract_id}/report")
-def get_report(contract_id: str,db: Session = Depends(get_db),
+async def get_report(contract_id: str,db: Session = Depends(get_db),
                settings: Settings = Depends(get_settings)):
 
     logger.info(f"Generating report for contract: {contract_id}")

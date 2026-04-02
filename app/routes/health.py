@@ -6,7 +6,7 @@ from qdrant_client import QdrantClient
 router = APIRouter(prefix="/api/v1", tags=["health"])
 
 @router.get("/health")
-def health_check(settings: Settings = Depends(get_settings)):
+async def health_check(settings: Settings = Depends(get_settings)):
     return {
         "app_name": settings.APP_NAME,
         "version": settings.APP_VERSION,

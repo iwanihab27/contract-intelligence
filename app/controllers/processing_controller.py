@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.controllers.base_controller import BaseController
 from app.core.config import Settings
 from app.models.contract import Contract
@@ -19,33 +20,34 @@ from nltk.tokenize import sent_tokenize
 logger = logging.getLogger(__name__)
 
 class ProcessingController(BaseController):
-    def __init__(self, db: Session, settings: Settings):
+    def __init__(self, db: AsyncSession, settings: Settings):
         super().__init__(db, settings)
 
         self.cohere = CohereController(db=db, settings=settings)
         self.qdrant = QdrantController(db=db, settings=settings)
         self.groq = GroqController(db=db, settings=settings)
 
-    def process(self, contract_id: str):
-        contract = self.db.query(Contract).filter(Contract.uuid == contract_id).first()
+    async def process(self, contract_id: str):
+        result = await self.db.execute(select(Contract).where(Contract.uuid == contract_id))
+        contract = result.scalar_one_or_none()
         if not contract:
             return False, "Contract not found"
 
-        self._update_status(contract, ProcessingEnums.PROCESSING)
+        await self._update_status(contract, ProcessingEnums.PROCESSING)
 
         text = self._process_text(contract.file_path)
-        chunks = self._chunk_text(text, contract.id)
+        chunks = await self._chunk_text(text, contract.id)
 
-        self._embed_and_store(chunks)
-        self._analyze(contract, text)
-        self._update_status(contract, ProcessingEnums.COMPLETED)
+        await self._embed_and_store(chunks)
+        await self._analyze(contract, text)
+        await self._update_status(contract, ProcessingEnums.COMPLETED)
 
         return True, "Contract processed successfully"
 
-    def _update_status(self, contract: Contract, status: ProcessingEnums):
+    async def _update_status(self, contract: Contract, status: ProcessingEnums):
         contract.status = status
-        self.db.commit()
-        self.db.refresh(contract)
+        await self.db.commit()
+        await self.db.refresh(contract)
 
     def _process_text(self, file_path: str) -> str:
         ext = Path(file_path).suffix.lower()
@@ -81,7 +83,7 @@ class ProcessingController(BaseController):
         logger.info(f"Extracted text from TXT file")
         return text
 
-    def _chunk_text(self, text: str, contract_id: str) -> list:
+    async def _chunk_text(self, text: str, contract_id: str) -> list:
         nltk.download('punkt', quiet=True)
         nltk.download('punkt_tab', quiet=True)
 
@@ -95,7 +97,6 @@ class ProcessingController(BaseController):
 
         if len(sections) <= 1:
             sections = [text]
-
 
         for section in sections:
             lines = section.split('\n')
@@ -112,7 +113,7 @@ class ProcessingController(BaseController):
                 section_title=section_title,
             )
             self.db.add(parent)
-            self.db.flush()
+            await self.db.flush()
 
             sentences = sent_tokenize(section_text)
 
@@ -138,7 +139,7 @@ class ProcessingController(BaseController):
                     chunks.append(child)
                     child_count += 1
 
-                    # overlap — keep last 2 sentences for next chunk
+                    # overlap
                     current_chunk = current_chunk[-overlap_sentences:]
                     current_word_count = sum(len(s.split()) for s in current_chunk)
 
@@ -157,23 +158,23 @@ class ProcessingController(BaseController):
                     chunks.append(child)
                     child_count += 1
 
-        self.db.commit()
+        await self.db.commit()
         return chunks
 
-    def _embed_and_store(self, chunks: list):
+    async def _embed_and_store(self, chunks: list):
         texts = [chunk.text for chunk in chunks]
         dense_vectors = self.cohere.embed_documents(texts)
         sparse_vectors = self.qdrant.embed_sparse(texts)
         self.qdrant.ensure_collection()
         self.qdrant.store_chunks(chunks, dense_vectors, sparse_vectors)
 
-    def _analyze(self, contract: Contract, text: str):
+    async def _analyze(self, contract: Contract, text: str):
         result = self.groq.analyze_contract(text)
 
         contract.summary = result.get("summary")
         contract.overall_risk_score = result.get("overall_risk_score")
         contract.contract_type = result.get("contract_type", "other")
-        self.db.commit()
+        await self.db.commit()
 
         risk = RiskScore(
             contract_id=contract.id,
@@ -186,5 +187,5 @@ class ProcessingController(BaseController):
             red_flags=str(result.get("red_flags", []))
         )
         self.db.add(risk)
-        self.db.commit()
+        await self.db.commit()
         logger.info(f"Analysis completed for contract: {contract.id}")

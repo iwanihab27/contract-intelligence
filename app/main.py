@@ -1,18 +1,28 @@
 import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from app.core.config import settings
-from app.core.startup import start_app
+from app.core.startup import init_db, include_routers
 from app.enums import ResponseEnums
+from app.core.database import engine
 
 logger = logging.getLogger(__name__)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    logger.info("Application started")
+    yield
+    await engine.dispose()
+    logger.info("Application stopped")
 
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
+    lifespan=lifespan
 )
-
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
@@ -30,4 +40,4 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         content={"signal": exc.detail}
     )
 
-start_app(app)
+include_routers(app)
