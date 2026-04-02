@@ -94,10 +94,8 @@ class ProcessingController(BaseController):
         sections = [s.strip() for s in sections if s.strip()]
 
         if len(sections) <= 1:
-            print("No sections found, using full text as one section")
             sections = [text]
 
-        print(f"Total sections found: {len(sections)}")
 
         for section in sections:
             lines = section.split('\n')
@@ -106,8 +104,6 @@ class ProcessingController(BaseController):
 
             if not section_text:
                 section_text = section
-
-            print(f"Section: {section_title[:50]} | Text length: {len(section_text)}")
 
             parent = Chunk(
                 contract_id=contract_id,
@@ -119,7 +115,6 @@ class ProcessingController(BaseController):
             self.db.flush()
 
             sentences = sent_tokenize(section_text)
-            print(f"  Sentences found: {len(sentences)}")
 
             current_chunk = []
             current_word_count = 0
@@ -162,10 +157,7 @@ class ProcessingController(BaseController):
                     chunks.append(child)
                     child_count += 1
 
-            print(f"  → {child_count} children created")
-
         self.db.commit()
-        print(f"Total child chunks: {len(chunks)}")
         return chunks
 
     def _embed_and_store(self, chunks: list):

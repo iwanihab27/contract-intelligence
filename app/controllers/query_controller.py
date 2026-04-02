@@ -40,12 +40,9 @@ class QueryController(BaseController):
         context = []
         for result in results:
             parent_id = result.payload.get("parent_id")
-            print(f"parent_id: {parent_id}")
             if parent_id:
                 parent = self.db.query(Chunk).filter(Chunk.id == parent_id).first()
-                print(f"parent found: {parent}")
                 if parent:
-                    print(f"parent text: {parent.text[:100]}")
                     result.payload["text"] = parent.text
             context.append(result)
         return context
