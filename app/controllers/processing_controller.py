@@ -169,7 +169,7 @@ class ProcessingController(BaseController):
         self.qdrant.store_chunks(chunks, dense_vectors, sparse_vectors)
 
     async def _analyze(self, contract: Contract, text: str):
-        result = self.groq.analyze_contract(text)
+        result = await self.groq.analyze_contract(text)
 
         contract.summary = result.get("summary")
         contract.overall_risk_score = result.get("overall_risk_score")

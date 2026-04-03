@@ -5,27 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4c71e363-f0bc-45c3-9795-3edeb4c3d70d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/controllers/user_controller.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/core/security.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routes/user.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/schemas/user.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/upload_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/upload_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/core/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/core/startup.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/core/startup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/chat_history.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/chat_history.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/chunk.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/chunk.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/controllers/processing_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/controllers/processing_controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models/contract.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/contract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/risk_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/risk_score.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/contracts.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/contracts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/process.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/process.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/query.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/query.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/report.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/upload.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,19 +39,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.query_controller.executor": "Run",
-    "Python.reset.executor": "Run",
-    "Python.test.executor": "Run",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.query_controller.executor&quot;: &quot;Run&quot;,
+    &quot;Python.reset.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
