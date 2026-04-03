@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     APP_ENV: str
 
     DATABASE_URL: str
+    PASSWORD: str
 
     QDRANT_URL: str
     QDRANT_API_KEY: str
@@ -20,6 +21,10 @@ class Settings(BaseSettings):
 
     UPLOAD_DIR: str
     MAX_FILE_SIZE_MB: int
+
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     class Config:
         env_file = ".env"

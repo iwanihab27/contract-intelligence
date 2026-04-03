@@ -28,14 +28,16 @@ class UploadController(BaseController):
 
         return True, ResponseEnums.FILE_UPLOAD_SUCCESS.value
 
-    def save_file(self, file: UploadFile):
+    async def save_file(self, file: UploadFile):
         ext = os.path.splitext(file.filename)[1].lower()  # splits the id from the ext
         unique_name = self.generate_hash(file.filename)  # gets the file ext .pdf
         file_path = os.path.join(self.settings.UPLOAD_DIR, unique_name)
         os.makedirs(self.settings.UPLOAD_DIR, exist_ok=True)
 
+        content = await file.read()
+
         with open(file_path, "wb") as f:
-            f.write(file.file.read())
+            f.write(content)
 
         return unique_name, file_path
 

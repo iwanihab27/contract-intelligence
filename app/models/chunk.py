@@ -4,7 +4,7 @@ from sqlalchemy import Column, String,Index, Integer, Text, DateTime, Enum as SA
 from app.core.database import Base
 from app.enums import ChunkEnums
 from sqlalchemy.dialects.postgresql import UUID
-
+from sqlalchemy.orm import relationship
 
 class Chunk(Base):
     __tablename__ = "chunks"
@@ -23,6 +23,8 @@ class Chunk(Base):
     qdrant_id = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    contract = relationship("Contract", back_populates="chunks")
 
     __table_args__ = (
         Index('ix_chunks_uuid', 'uuid'),

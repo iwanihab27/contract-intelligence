@@ -1,7 +1,7 @@
 import logging
 from fastapi import APIRouter, UploadFile, File, Depends, status
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.controllers.upload_controller import UploadController
 from app.core.database import get_db
 from app.core.config import Settings, get_settings
@@ -12,8 +12,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.post("/upload")
-async def upload_contract(contract: ContractCreate = Depends(),file: UploadFile = File(...),db: Session = Depends(get_db),
-                    settings: Settings = Depends(get_settings)):
+async def upload_contract(contract: ContractCreate = Depends(),
+                          file: UploadFile = File(...),db: AsyncSession = Depends(get_db),
+                          settings: Settings = Depends(get_settings)):
 
     logger.info(f"Uploading contract: {contract.name}")
     controller = UploadController(db=db, settings=settings)
@@ -25,10 +26,10 @@ async def upload_contract(contract: ContractCreate = Depends(),file: UploadFile 
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"signal": result_signal})
 
-    file_name, file_path = controller.save_file(file)
+    file_name, file_path = await controller.save_file(file)
     logger.info(f"File saved: {file_name}")
 
-    result = controller.create_contract(
+    result = await controller.create_contract(
         name=contract.name,
         file_name=file_name,
         file_path=file_path

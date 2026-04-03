@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    await include_routers(app)
     logger.info("Application started")
     yield
     await engine.dispose()
@@ -39,5 +40,3 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         status_code=exc.status_code,
         content={"signal": exc.detail}
     )
-
-include_routers(app)

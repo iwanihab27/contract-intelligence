@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, Text, DateTime, Float, ForeignKey, Enum 
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
 from app.enums import QueryEnums
+from sqlalchemy.orm import relationship
 
 class ChatHistory(Base):
     __tablename__ = "chat_history"
@@ -21,6 +22,8 @@ class ChatHistory(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    contract = relationship("Contract", back_populates="history")
 
     __table_args__ = (
         Index('ix_chat_history_uuid', 'uuid'),

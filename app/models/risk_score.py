@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, Text, Index
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.database import Base
+from sqlalchemy.orm import relationship
 
 class RiskScore(Base):
     __tablename__ = "risk_scores"
@@ -22,6 +23,8 @@ class RiskScore(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    contract = relationship("Contract", back_populates="risk_score")
 
     __table_args__ = (
         Index('ix_risk_scores_uuid', 'uuid'),

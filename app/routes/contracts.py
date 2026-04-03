@@ -1,7 +1,7 @@
 import logging
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.controllers.contracts_controller import ContractsController
 from app.core.database import get_db
 from app.core.config import Settings, get_settings
@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.get("")
-async def get_contracts(db: Session = Depends(get_db),settings: Settings = Depends(get_settings)):
+async def get_contracts(db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings)):
 
     controller = ContractsController(db=db, settings=settings)
-    contracts = controller.get_all()
+    contracts = await controller.get_all()
 
     if not contracts:
         return JSONResponse(
@@ -27,13 +27,13 @@ async def get_contracts(db: Session = Depends(get_db),settings: Settings = Depen
 
 
 @router.delete("/{contract_id}")
-async def delete_contract(contract_id: str,db: Session = Depends(get_db),
+async def delete_contract(contract_id: str,db: AsyncSession = Depends(get_db),
                     settings: Settings = Depends(get_settings)):
 
     logger.info(f"Deleting contract: {contract_id}")
     controller = ContractsController(db=db, settings=settings)
 
-    is_valid, result_signal = controller.delete(contract_id)
+    is_valid, result_signal = await controller.delete(contract_id)
     if not is_valid:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -47,13 +47,13 @@ async def delete_contract(contract_id: str,db: Session = Depends(get_db),
 
 
 @router.post("/{contract_id}/reanalyze")
-async def reanalyze_contract(contract_id: str,db: Session = Depends(get_db),
+async def reanalyze_contract(contract_id: str,db: AsyncSession = Depends(get_db),
                        settings: Settings = Depends(get_settings)):
 
     logger.info(f"Reanalyzing contract: {contract_id}")
     controller = ContractsController(db=db, settings=settings)
 
-    is_valid, result_signal = controller.reanalyze(contract_id)
+    is_valid, result_signal = await controller.reanalyze(contract_id)
     if not is_valid:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
