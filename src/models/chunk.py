@@ -1,8 +1,8 @@
 import uuid as uuid_lib
 from datetime import datetime
 from sqlalchemy import Column, String,Index, Integer, Text, DateTime, Enum as SAEnum, ForeignKey
-from app.core.database import Base
-from app.enums import ChunkEnums
+from src.core.database import Base
+from src.enums import ChunkEnums
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 

@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from src.enums.llm_enums import LLMProvider
 
 
 class Settings(BaseSettings):
@@ -9,7 +10,6 @@ class Settings(BaseSettings):
     APP_ENV: str
 
     DATABASE_URL: str
-    PASSWORD: str
 
     QDRANT_URL: str
     QDRANT_API_KEY: str
@@ -18,13 +18,28 @@ class Settings(BaseSettings):
     COHERE_API_KEY: str
 
     GROQ_API_KEY: str
+    OPENAI_API_KEY: str = ""
+
+    LLM_PROVIDER: LLMProvider = LLMProvider.GROQ
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    OPENAI_MODEL: str = "gpt-4o"
+    OLLAMA_MODEL: str = "llama3.2"
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
 
     UPLOAD_DIR: str
     MAX_FILE_SIZE_MB: int
 
+    ALLOWED_EXTENSIONS: str = ".pdf,.docx,.doc,.txt"
+
+    CHILD_CHUNK_WORDS: int = 100
+    CHUNK_OVERLAP_SENTENCES: int = 2
+
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
+    def get_allowed_extensions(self) -> list[str]:
+        return [ext.strip() for ext in self.ALLOWED_EXTENSIONS.split(",")]
 
     class Config:
         env_file = ".env"

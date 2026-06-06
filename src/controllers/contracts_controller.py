@@ -2,23 +2,22 @@ import asyncio
 import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from app.controllers.base_controller import BaseController
-from app.controllers.groq_controller import GroqController
-from app.controllers.qdrant_controller import QdrantController
-from app.core.config import Settings
-from app.enums import ResponseEnums
-from app.models.contract import Contract
-from app.models.chunk import Chunk
-from app.models.risk_score import RiskScore
-from app.controllers.processing_controller import ProcessingController
-from app.models.chat_history import ChatHistory
+from src.controllers.base_controller import BaseController
+from src.controllers.qdrant_controller import QdrantController
+from src.core.config import Settings
+from src.enums import ResponseEnums
+from src.models.contract import Contract
+from src.models.chunk import Chunk
+from src.models.risk_score import RiskScore
+from src.controllers.processing_controller import ProcessingController
+from src.models.chat_history import ChatHistory
 
 logger = logging.getLogger(__name__)
+
 
 class ContractsController(BaseController):
     def __init__(self, db: AsyncSession, settings: Settings):
         super().__init__(db, settings)
-        self.groq = GroqController(db=db, settings=settings)
         self.qdrant = QdrantController(db=db, settings=settings)
 
     async def get_all(self):
@@ -63,12 +62,14 @@ class ContractsController(BaseController):
             return False, ResponseEnums.CONTRACT_NOT_FOUND.value
 
         processor = ProcessingController(db=self.db, settings=self.settings)
-        text = processor._process_text(contract.file_path)
+        text = processor.load_document(contract.file_path)
+        if not text:
+            return False, "Failed to extract text from document"
 
         await self.db.execute(delete(RiskScore).where(RiskScore.contract_id == contract.id))
         await self.db.commit()
 
-        await processor._analyze(contract, text)
+        await processor.analyze(contract, text)
         logger.info(f"Reanalyzed contract: {contract_uuid}")
 
         return True, ResponseEnums.CONTRACT_PROCESSED.value

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from app.enums import ContractEnums, ProcessingEnums
+from src.enums import ContractEnums, ProcessingEnums
 from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 

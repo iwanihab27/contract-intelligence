@@ -2,7 +2,7 @@ import uuid as uuid_lib
 from datetime import datetime
 from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, Text, Index
 from sqlalchemy.dialects.postgresql import UUID
-from app.core.database import Base
+from src.core.database import Base
 from sqlalchemy.orm import relationship
 
 class RiskScore(Base):

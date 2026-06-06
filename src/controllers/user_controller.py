@@ -1,64 +1,64 @@
+import logging
 from fastapi import status
 from fastapi.responses import JSONResponse
 from sqlalchemy.future import select
-from app.models.user import User
-from app.core.security import get_password_hash, verify_password, create_access_token
-from base_controller import BaseController
+from src.models.user import User
+from src.core.security import get_password_hash, verify_password, create_access_token
+from src.controllers.base_controller import BaseController
+from src.enums.user_enums import UserEnums
+
+logger = logging.getLogger(__name__)
+
 
 class UserController(BaseController):
+
     async def create_user(self, user_in):
-        query = select(User).where(User.email == user_in.email)
+        query = select(User).where(
+            (User.email == user_in.email) | (User.username == user_in.username)
+        )
         result = await self.db.execute(query)
         if result.scalar_one_or_none():
-            return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content={"success": False, "message": "Email already registered"}
-            )
-
-        hashed_pw = get_password_hash(user_in.password)
+            return False, UserEnums.USER_ALREADY_EXISTS.value
 
         new_user = User(
             username=user_in.username,
             email=user_in.email,
-            hashed_password=hashed_pw
+            hashed_password=get_password_hash(user_in.password),
+            is_active=True
         )
-
         self.db.add(new_user)
         await self.db.commit()
         await self.db.refresh(new_user)
+        logger.info(f"User created: {new_user.username}")
+        return True, new_user
 
-        return {"success": True, "message": "User created successfully", "user_id": new_user.id}
-
-    async def login(self, email: str, password: str):
-        query = select(User).where(User.email == email)
+    async def login(self, username: str, password: str):
+        query = select(User).where(User.username == username)
         result = await self.db.execute(query)
         user = result.scalar_one_or_none()
 
         if not user or not verify_password(password, user.hashed_password):
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"success": False, "message": "Invalid email or password"}
-            )
+            return False, UserEnums.INVALID_CREDENTIALS.value
 
         token = create_access_token(subject=user.id)
+        logger.info(f"User logged in: {user.username}")
+        return True, {"access_token": token, "token_type": "bearer"}
 
-        return {
-            "success": True,
-            "access_token": token,
-            "token_type": "bearer"
-        }
+    async def get_user(self, user_id: int):
+        query = select(User).where(User.id == user_id)
+        result = await self.db.execute(query)
+        user = result.scalar_one_or_none()
+        if not user:
+            return False, UserEnums.USER_NOT_FOUND.value
+        return True, user
 
     async def delete_user(self, user_id: int):
         query = select(User).where(User.id == user_id)
         result = await self.db.execute(query)
         user = result.scalar_one_or_none()
-
         if not user:
-            return JSONResponse(
-                status_code=status.HTTP_404_NOT_FOUND,
-                content={"success": False, "message": "Cannot delete: User not found"}
-            )
-
+            return False, UserEnums.USER_NOT_FOUND.value
         await self.db.delete(user)
         await self.db.commit()
-        return {"success": True, "message": "Account deleted"}
+        logger.info(f"User deleted: {user_id}")
+        return True, UserEnums.ACCOUNT_DELETED.value

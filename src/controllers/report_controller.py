@@ -8,11 +8,11 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib.units import cm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.controllers.base_controller import BaseController
-from app.core.config import Settings
-from app.models.contract import Contract
-from app.models.risk_score import RiskScore
-from app.models.chat_history import ChatHistory
+from src.controllers.base_controller import BaseController
+from src.core.config import Settings
+from src.models.contract import Contract
+from src.models.risk_score import RiskScore
+from src.models.chat_history import ChatHistory
 
 logger = logging.getLogger(__name__)
 

@@ -2,8 +2,8 @@ import uuid as uuid_lib
 from datetime import datetime
 from sqlalchemy import Column, Integer, Text, DateTime, Float, ForeignKey, Enum as SAEnum, Index
 from sqlalchemy.dialects.postgresql import UUID
-from app.core.database import Base
-from app.enums import QueryEnums
+from src.core.database import Base
+from src.enums import QueryEnums
 from sqlalchemy.orm import relationship
 
 class ChatHistory(Base):

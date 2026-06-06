@@ -1,8 +1,8 @@
 import asyncio
 import logging
 import cohere
-from app.controllers.base_controller import BaseController
-from app.core.config import Settings
+from src.controllers.base_controller import BaseController
+from src.core.config import Settings
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)

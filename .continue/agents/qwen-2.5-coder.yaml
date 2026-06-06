@@ -1,0 +1,11 @@
+models:
+  - title: "Qwen 2.5 Coder"
+    provider: "ollama"
+    model: "qwen2.5-coder:7b"
+tabAutocompleteModel:
+  title: "Qwen 2.5 Coder"
+  provider: "ollama"
+  model: "qwen2.5-coder:7b"
+embeddingsProvider:
+  provider: "ollama"
+  model: "nomic-embed-text"

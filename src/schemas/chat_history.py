@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
-from app.enums import QueryEnums
+from src.enums import QueryEnums
 
 
 class ChatRequest(BaseModel):

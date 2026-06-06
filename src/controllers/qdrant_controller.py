@@ -9,8 +9,8 @@ from qdrant_client.models import (
 )
 from fastembed import SparseTextEmbedding
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.controllers.base_controller import BaseController
-from app.core.config import Settings
+from src.controllers.base_controller import BaseController
+from src.core.config import Settings
 
 logger = logging.getLogger(__name__)
 

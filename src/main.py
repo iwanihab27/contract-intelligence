@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from app.core.config import settings
-from app.core.startup import init_db, include_routers
-from app.enums import ResponseEnums
-from app.core.database import engine
+from src.core.config import settings
+from src.core.startup import init_db, include_routers
+from src.enums import ResponseEnums
+from src.core.database import engine
 
 logger = logging.getLogger(__name__)
 

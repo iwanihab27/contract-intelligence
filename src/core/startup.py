@@ -1,12 +1,12 @@
 from fastapi import FastAPI
-from app.core.database import Base, engine
-from app.routes.health import router as health_router
-from app.routes.upload import router as upload_router
-from app.routes.process import router as process_router
-from app.routes.query import router as query_router
-from app.routes.contracts import router as contracts_router
-from app.routes.report import router as report_router
-from app.routes.user import router as user_router
+from src.core.database import Base, engine
+from src.routes.health import router as health_router
+from src.routes.upload import router as upload_router
+from src.routes.process import router as process_router
+from src.routes.query import router as query_router
+from src.routes.contracts import router as contracts_router
+from src.routes.report import router as report_router
+from src.routes.user import router as user_router
 
 async def include_routers(app: FastAPI):
     app.include_router(health_router)

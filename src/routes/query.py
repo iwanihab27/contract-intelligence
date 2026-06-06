@@ -2,20 +2,18 @@ import logging
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.controllers.query_controller import QueryController
-from app.core.database import get_db
-from app.core.config import Settings, get_settings
-from app.enums import ResponseEnums
-from app.schemas.chat_history import ChatRequest
+from src.controllers.query_controller import QueryController
+from src.core.database import get_db
+from src.core.config import settings
+from src.enums import ResponseEnums
+from src.schemas.chat_history import ChatRequest
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 
 @router.post("/query")
-async def query_contract(request: ChatRequest, db: AsyncSession = Depends(get_db),
-                         settings: Settings = Depends(get_settings)):
-
+async def query_contract(request: ChatRequest, db: AsyncSession = Depends(get_db)):
     logger.info(f"Query received for contract: {request.contract_id}")
     controller = QueryController(db=db, settings=settings)
 

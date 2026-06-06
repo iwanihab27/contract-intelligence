@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
-from app.enums import ChunkEnums
+from src.enums import ChunkEnums
 
 
 class ChunkResponse(BaseModel):

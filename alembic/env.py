@@ -13,7 +13,7 @@ config = context.config
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app.core.config import settings
+from src.core.config import settings
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 # Interpret the config file for Python logging.
@@ -21,12 +21,12 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Models
-from app.core.database import Base
-from app.models.user import User
-from app.models.contract import Contract
-from app.models.chunk import Chunk
-from app.models.chat_history import ChatHistory
-from app.models.risk_score import RiskScore
+from src.core.database import Base
+from src.models.user import User
+from src.models.contract import Contract
+from src.models.chunk import Chunk
+from src.models.chat_history import ChatHistory
+from src.models.risk_score import RiskScore
 
 target_metadata = Base.metadata
 
