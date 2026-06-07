@@ -8,6 +8,7 @@ from src.routes.contracts import router as contracts_router
 from src.routes.report import router as report_router
 from src.routes.user import router as user_router
 
+
 async def include_routers(app: FastAPI):
     app.include_router(health_router)
     app.include_router(user_router)
@@ -19,8 +20,7 @@ async def include_routers(app: FastAPI):
 
 
 async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    pass
 
 
 async def start_app(app: FastAPI):

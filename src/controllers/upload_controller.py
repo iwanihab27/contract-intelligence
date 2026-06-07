@@ -41,12 +41,13 @@ class UploadController(BaseController):
 
         return unique_name, file_path
 
-    async def create_contract(self, name: str, file_name: str, file_path: str):
+    async def create_contract(self, name: str, file_name: str, file_path: str, user_id):
         contract = Contract(
             name=name,
             file_name=file_name,
             file_path=file_path,
-            contract_type=ContractEnums.OTHER
+            contract_type=ContractEnums.OTHER,
+            user_id=user_id
         )
         self.db.add(contract)
         await self.db.commit()

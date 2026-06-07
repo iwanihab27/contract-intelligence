@@ -5,15 +5,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.controllers.contracts_controller import ContractsController
 from src.core.database import get_db
 from src.core.config import Settings, get_settings
+from src.core.security import get_current_user
 from src.enums import ResponseEnums
+from src.models.user import User
 from src.schemas.contract import ContractListResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
-@router.get("")
-async def get_contracts(db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings)):
 
+@router.get("")
+async def get_contracts(db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings),
+                        current_user: User = Depends(get_current_user)):
     controller = ContractsController(db=db, settings=settings)
     contracts = await controller.get_all()
 
@@ -28,8 +31,8 @@ async def get_contracts(db: AsyncSession = Depends(get_db),settings: Settings = 
 
 @router.delete("/{contract_id}")
 async def delete_contract(contract_id: str,db: AsyncSession = Depends(get_db),
-                    settings: Settings = Depends(get_settings)):
-
+                          settings: Settings = Depends(get_settings),
+                          current_user: User = Depends(get_current_user)):
     logger.info(f"Deleting contract: {contract_id}")
     controller = ContractsController(db=db, settings=settings)
 
@@ -48,8 +51,8 @@ async def delete_contract(contract_id: str,db: AsyncSession = Depends(get_db),
 
 @router.post("/{contract_id}/reanalyze")
 async def reanalyze_contract(contract_id: str,db: AsyncSession = Depends(get_db),
-                       settings: Settings = Depends(get_settings)):
-
+                             settings: Settings = Depends(get_settings),
+                             current_user: User = Depends(get_current_user)):
     logger.info(f"Reanalyzing contract: {contract_id}")
     controller = ContractsController(db=db, settings=settings)
 

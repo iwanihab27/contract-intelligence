@@ -5,68 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5e91baed-e222-4e92-ab5e-1ac6d6fce80f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/controllers/LLM/providers/ollama_provider.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/LLM/providers/openai_provider.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controllers/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/core/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/enums/llm_enums.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/enums/user_enums.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/routes/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/contract rag.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aider.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/base_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/base_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/cohere_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/cohere_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/contracts_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/contracts_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/groq_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/processing_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/processing_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/qdrant_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/qdrant_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/query_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/query_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/report_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/report_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/upload_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/upload_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/user_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/user_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/core/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/LLM/providers/base_provider.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/core/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/core/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/security.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/core/startup.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/startup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/chunk_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/chunk_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/contract_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/contract_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/export_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/export_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/file_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/file_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/processing_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/processing_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/query_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/query_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/response_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/response_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/enums/search_enums.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/enums/search_enums.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/chat_history.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/chat_history.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/chunk.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/chunk.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/contract.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/contract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/risk_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/risk_score.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/LLM/providers/groq_provider.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/contracts.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/contracts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/health.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/health.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/process.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/process.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/query.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/query.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/report.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/report.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/upload.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/chat_history.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/chat_history.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/chunk.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/chunk.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/contract.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/contract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/risk_score.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/risk_score.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/schemas/user.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/processing_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/processing_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/upload_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/upload_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controllers/user_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/user_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/security.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/startup.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/startup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/models/contract.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/models/contract.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/contracts.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/contracts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/process.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/process.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/query.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/query.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/report.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/upload.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/user.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

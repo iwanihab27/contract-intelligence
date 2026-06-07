@@ -6,6 +6,7 @@ from src.core.database import get_db
 from src.core.config import settings
 from src.controllers.user_controller import UserController
 from src.schemas.user import UserCreate, UserLogin, UserResponse
+from fastapi.security import OAuth2PasswordRequestForm
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -19,13 +20,13 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     if not success:
         return JSONResponse(status_code=400, content={"fail": False, "message": result})
 
-    return {"success": True, "message": "User registered successfully", "user_id": str(result.uuid)}
+    return {"success": True, "message": "User registered successfully", "user_id": str(result.id)}
 
 
 @router.post("/login")
-async def login(login_data: UserLogin, db: AsyncSession = Depends(get_db)):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     controller = UserController(db=db, settings=settings)
-    success, result = await controller.login(login_data.username, login_data.password)
+    success, result = await controller.login(form_data.username, form_data.password)
 
     if not success:
         return JSONResponse(status_code=401, content={"fail": False, "message": result})
@@ -34,7 +35,7 @@ async def login(login_data: UserLogin, db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_profile(user_id: int, db: AsyncSession = Depends(get_db)):
+async def get_profile(user_id: str, db: AsyncSession = Depends(get_db)):
     controller = UserController(db=db, settings=settings)
     success, result = await controller.get_user(user_id)
 
@@ -45,7 +46,7 @@ async def get_profile(user_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @router.delete("/{user_id}")
-async def delete_account(user_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_account(user_id: str, db: AsyncSession = Depends(get_db)):
     controller = UserController(db=db, settings=settings)
     success, result = await controller.delete_user(user_id)
 

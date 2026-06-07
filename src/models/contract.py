@@ -24,7 +24,7 @@ class Contract(Base):
     status = Column(SAEnum(ProcessingEnums), nullable=False, default=ProcessingEnums.PENDING)
 
     summary = Column(Text, nullable=True)
-    risk_score = Column(Float, nullable=True, default=0.0)
+    risk_score_value = Column(Float, nullable=True, default=0.0)
     overall_risk_score = Column(Float, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)

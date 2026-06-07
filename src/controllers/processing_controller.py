@@ -1,10 +1,9 @@
 import logging
 import re
-import nltk
 from pathlib import Path
-from nltk.tokenize import sent_tokenize
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from src.controllers.base_controller import BaseController
 from src.core.config import Settings
 from src.models.contract import Contract
@@ -25,6 +24,12 @@ class ProcessingController(BaseController):
         self.cohere = CohereController(db=db, settings=settings)
         self.qdrant = QdrantController(db=db, settings=settings)
         self.llm = LLMController(db=db, settings=settings)
+        self.splitter = RecursiveCharacterTextSplitter(
+            chunk_size=self.settings.CHILD_CHUNK_WORDS,
+            chunk_overlap=self.settings.CHUNK_OVERLAP_SENTENCES,
+            separators=["\n\n", "\n", ". ", " ", ""],
+            length_function=len,
+        )
 
     async def process(self, contract_id: str):
         result = await self.db.execute(select(Contract).where(Contract.uuid == contract_id))
@@ -66,20 +71,15 @@ class ProcessingController(BaseController):
         logger.info(f"Loaded {len(documents)} sections, {len(full_text)} chars")
         return full_text
 
-    async def chunk_text(self, text: str, contract_id: str) -> list:
-        nltk.download("punkt", quiet=True)
-        nltk.download("punkt_tab", quiet=True)
-
-        child_size = self.settings.CHILD_CHUNK_WORDS
-        overlap_sentences = self.settings.CHUNK_OVERLAP_SENTENCES
-        chunks = []
-
+    async def chunk_text(self, text: str, contract_id: int) -> list:
         section_pattern = r'\n(?=(?:Section\s+\d+|SECTION\s+\d+|\d+\.\s+[A-Z]))'
         sections = re.split(section_pattern, text)
         sections = [s.strip() for s in sections if s.strip()]
 
         if len(sections) <= 1:
             sections = [text]
+
+        chunks = []
 
         for section in sections:
             lines = section.split("\n")
@@ -98,50 +98,31 @@ class ProcessingController(BaseController):
             self.db.add(parent)
             await self.db.flush()
 
-            sentences = sent_tokenize(section_text)
-            current_chunk = []
-            current_word_count = 0
+            child_texts = self.splitter.split_text(section_text)
 
-            for sentence in sentences:
-                current_chunk.append(sentence)
-                current_word_count += len(sentence.split())
-
-                if current_word_count >= child_size:
-                    child = Chunk(
-                        contract_id=contract_id,
-                        parent_id=parent.id,
-                        chunk_type=ChunkEnums.CHILD,
-                        text=" ".join(current_chunk),
-                        section_title=section_title,
-                    )
-                    self.db.add(child)
-                    chunks.append(child)
-
-                    current_chunk = current_chunk[-overlap_sentences:]
-                    current_word_count = sum(len(s.split()) for s in current_chunk)
-
-            if current_chunk:
-                remaining_text = " ".join(current_chunk)
-                if len(remaining_text.split()) >= 10:
-                    child = Chunk(
-                        contract_id=contract_id,
-                        parent_id=parent.id,
-                        chunk_type=ChunkEnums.CHILD,
-                        text=remaining_text,
-                        section_title=section_title,
-                    )
-                    self.db.add(child)
-                    chunks.append(child)
+            for child_text in child_texts:
+                if len(child_text.split()) < 10:
+                    continue
+                child = Chunk(
+                    contract_id=contract_id,
+                    parent_id=parent.id,
+                    chunk_type=ChunkEnums.CHILD,
+                    text=child_text,
+                    section_title=section_title,
+                )
+                self.db.add(child)
+                chunks.append(child)
 
         await self.db.commit()
+        logger.info(f"Created {len(chunks)} child chunks for contract {contract_id}")
         return chunks
 
     async def embed_and_store(self, chunks: list):
         texts = [chunk.text for chunk in chunks]
         dense_vectors = await self.cohere.embed_documents(texts)
         sparse_vectors = await self.qdrant.embed_sparse(texts)
-        self.qdrant.ensure_collection()
-        self.qdrant.store_chunks(chunks, dense_vectors, sparse_vectors)
+        await self.qdrant.ensure_collection()
+        await self.qdrant.store_chunks(chunks, dense_vectors, sparse_vectors)
 
     async def analyze(self, contract: Contract, text: str):
         result = await self.llm.analyze_contract(text)

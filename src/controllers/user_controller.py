@@ -6,6 +6,7 @@ from src.models.user import User
 from src.core.security import get_password_hash, verify_password, create_access_token
 from src.controllers.base_controller import BaseController
 from src.enums.user_enums import UserEnums
+from fastapi.security import OAuth2PasswordRequestForm
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class UserController(BaseController):
         logger.info(f"User logged in: {user.username}")
         return True, {"access_token": token, "token_type": "bearer"}
 
-    async def get_user(self, user_id: int):
+    async def get_user(self, user_id: str):
         query = select(User).where(User.id == user_id)
         result = await self.db.execute(query)
         user = result.scalar_one_or_none()
@@ -52,7 +53,7 @@ class UserController(BaseController):
             return False, UserEnums.USER_NOT_FOUND.value
         return True, user
 
-    async def delete_user(self, user_id: int):
+    async def delete_user(self, user_id: str):
         query = select(User).where(User.id == user_id)
         result = await self.db.execute(query)
         user = result.scalar_one_or_none()

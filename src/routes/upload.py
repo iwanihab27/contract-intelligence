@@ -5,17 +5,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.controllers.upload_controller import UploadController
 from src.core.database import get_db
 from src.core.config import Settings, get_settings
+from src.core.security import get_current_user
 from src.enums import ResponseEnums
+from src.models.user import User
 from src.schemas.contract import ContractCreate
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
-@router.post("/upload")
-async def upload_contract(contract: ContractCreate = Depends(),
-                          file: UploadFile = File(...),db: AsyncSession = Depends(get_db),
-                          settings: Settings = Depends(get_settings)):
 
+@router.post("/upload")
+async def upload_contract(contract: ContractCreate = Depends(),file: UploadFile = File(...),
+                          db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings),
+                          current_user: User = Depends(get_current_user)):
     logger.info(f"Uploading contract: {contract.name}")
     controller = UploadController(db=db, settings=settings)
 
@@ -32,7 +34,8 @@ async def upload_contract(contract: ContractCreate = Depends(),
     result = await controller.create_contract(
         name=contract.name,
         file_name=file_name,
-        file_path=file_path
+        file_path=file_path,
+        user_id=current_user.id
     )
     logger.info(f"Contract created: {result.id}")
 

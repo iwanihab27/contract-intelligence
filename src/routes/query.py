@@ -5,7 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.controllers.query_controller import QueryController
 from src.core.database import get_db
 from src.core.config import settings
+from src.core.security import get_current_user
 from src.enums import ResponseEnums
+from src.models.user import User
 from src.schemas.chat_history import ChatRequest
 
 logger = logging.getLogger(__name__)
@@ -13,7 +15,8 @@ router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 
 @router.post("/query")
-async def query_contract(request: ChatRequest, db: AsyncSession = Depends(get_db)):
+async def query_contract(request: ChatRequest,db: AsyncSession = Depends(get_db),
+                         current_user: User = Depends(get_current_user)):
     logger.info(f"Query received for contract: {request.contract_id}")
     controller = QueryController(db=db, settings=settings)
 
