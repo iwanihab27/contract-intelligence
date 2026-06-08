@@ -8,13 +8,16 @@ from src.core.config import Settings, get_settings
 from src.core.security import get_current_user
 from src.enums import ResponseEnums
 from src.models.user import User
+from src.core.limiter import limiter
+from fastapi import Request
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 
 @router.post("/process/{contract_id}")
-async def process_contract(contract_id: str,db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings),
+@limiter.limit("5/minute")
+async def process_contract(request: Request, contract_id: str,db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings),
                            current_user: User = Depends(get_current_user)):
     logger.info(f"Processing contract: {contract_id}")
     controller = ProcessingController(db=db, settings=settings)

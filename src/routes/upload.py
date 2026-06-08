@@ -9,13 +9,16 @@ from src.core.security import get_current_user
 from src.enums import ResponseEnums
 from src.models.user import User
 from src.schemas.contract import ContractCreate
+from src.core.limiter import limiter
+from fastapi import Request
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 
 @router.post("/upload")
-async def upload_contract(contract: ContractCreate = Depends(),file: UploadFile = File(...),
+@limiter.limit("10/minute")
+async def upload_contract(request: Request, contract: ContractCreate = Depends(),file: UploadFile = File(...),
                           db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings),
                           current_user: User = Depends(get_current_user)):
     logger.info(f"Uploading contract: {contract.name}")

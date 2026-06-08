@@ -48,3 +48,5 @@ langchain-community
 pypdf
 docx2txt
 bcrypt==4.0.1
+
+slowapi==0.1.9

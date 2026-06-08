@@ -7,6 +7,9 @@ from src.core.config import settings
 from src.core.startup import init_db, include_routers
 from src.enums import ResponseEnums
 from src.core.database import engine
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from src.core.limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +27,9 @@ app = FastAPI(
     version=settings.APP_VERSION,
     lifespan=lifespan
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):

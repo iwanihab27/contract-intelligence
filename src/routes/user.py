@@ -7,13 +7,16 @@ from src.core.config import settings
 from src.controllers.user_controller import UserController
 from src.schemas.user import UserCreate, UserLogin, UserResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from src.core.limiter import limiter
+from fastapi import Request
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def register(request: Request, user_in: UserCreate, db: AsyncSession = Depends(get_db)):
     controller = UserController(db=db, settings=settings)
     success, result = await controller.create_user(user_in)
 
@@ -24,7 +27,8 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute")
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     controller = UserController(db=db, settings=settings)
     success, result = await controller.login(form_data.username, form_data.password)
 
@@ -35,7 +39,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSessi
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_profile(user_id: str, db: AsyncSession = Depends(get_db)):
+@limiter.limit("30/minute")
+async def get_profile(request: Request, user_id: str, db: AsyncSession = Depends(get_db)):
     controller = UserController(db=db, settings=settings)
     success, result = await controller.get_user(user_id)
 
@@ -46,7 +51,8 @@ async def get_profile(user_id: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.delete("/{user_id}")
-async def delete_account(user_id: str, db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute")
+async def delete_account(request: Request, user_id: str, db: AsyncSession = Depends(get_db)):
     controller = UserController(db=db, settings=settings)
     success, result = await controller.delete_user(user_id)
 
