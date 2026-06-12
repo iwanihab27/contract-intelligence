@@ -11,7 +11,7 @@ from src.models.chunk import Chunk
 from src.models.risk_score import RiskScore
 from src.enums.file_enums import FileEnums
 from src.enums import ProcessingEnums, ChunkEnums
-from src.controllers.cohere_controller import CohereController
+from src.controllers.embedding_controller import EmbeddingController
 from src.controllers.qdrant_controller import QdrantController
 from src.controllers.LLM.llm_controller import LLMController
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class ProcessingController(BaseController):
     def __init__(self, db: AsyncSession, settings: Settings):
         super().__init__(db, settings)
-        self.cohere = CohereController(db=db, settings=settings)
+        self.embedding = EmbeddingController(db=db, settings=settings)
         self.qdrant = QdrantController(db=db, settings=settings)
         self.llm = LLMController(db=db, settings=settings)
         self.splitter = RecursiveCharacterTextSplitter(
@@ -119,7 +119,7 @@ class ProcessingController(BaseController):
 
     async def embed_and_store(self, chunks: list):
         texts = [chunk.text for chunk in chunks]
-        dense_vectors = await self.cohere.embed_documents(texts)
+        dense_vectors = await self.embedding.embed_documents(texts)
         sparse_vectors = await self.qdrant.embed_sparse(texts)
         await self.qdrant.ensure_collection()
         await self.qdrant.store_chunks(chunks, dense_vectors, sparse_vectors)

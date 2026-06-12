@@ -5,6 +5,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from src.core.config import settings
 from src.core.startup import init_db, include_routers
+from src.core.cache import init_redis, close_redis
 from src.enums import ResponseEnums
 from src.core.database import engine
 from slowapi import _rate_limit_exceeded_handler
@@ -16,9 +17,11 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    await init_redis()
     await include_routers(app)
     logger.info("Application started")
     yield
+    await close_redis()
     await engine.dispose()
     logger.info("Application stopped")
 

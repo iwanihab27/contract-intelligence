@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.controllers.contracts_controller import ContractsController
@@ -8,9 +8,7 @@ from src.core.config import Settings, get_settings
 from src.core.security import get_current_user
 from src.enums import ResponseEnums
 from src.models.user import User
-from src.schemas.contract import ContractListResponse
 from src.core.limiter import limiter
-from fastapi import Request
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
@@ -18,7 +16,8 @@ router = APIRouter(prefix="/api/v1/contracts", tags=["Contracts"])
 
 @router.get("")
 @limiter.limit("60/minute")
-async def get_contracts(request: Request, db: AsyncSession = Depends(get_db),settings: Settings = Depends(get_settings),
+async def get_contracts(request: Request,db: AsyncSession = Depends(get_db),
+                        settings: Settings = Depends(get_settings),
                         current_user: User = Depends(get_current_user)):
     controller = ContractsController(db=db, settings=settings)
     contracts = await controller.get_all()
@@ -29,12 +28,15 @@ async def get_contracts(request: Request, db: AsyncSession = Depends(get_db),set
             content={"signal": ResponseEnums.CONTRACT_LIST_EMPTY.value}
         )
 
-    return [ContractListResponse.model_validate(c) for c in contracts]
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"signal": ResponseEnums.SUCCESS.value, "contracts": contracts}
+    )
 
 
 @router.delete("/{contract_id}")
 @limiter.limit("60/minute")
-async def delete_contract(request: Request, contract_id: str,db: AsyncSession = Depends(get_db),
+async def delete_contract(request: Request,contract_id: str,db: AsyncSession = Depends(get_db),
                           settings: Settings = Depends(get_settings),
                           current_user: User = Depends(get_current_user)):
     logger.info(f"Deleting contract: {contract_id}")
@@ -55,7 +57,7 @@ async def delete_contract(request: Request, contract_id: str,db: AsyncSession = 
 
 @router.post("/{contract_id}/reanalyze")
 @limiter.limit("5/minute")
-async def reanalyze_contract(request: Request, contract_id: str,db: AsyncSession = Depends(get_db),
+async def reanalyze_contract(request: Request,contract_id: str,db: AsyncSession = Depends(get_db),
                              settings: Settings = Depends(get_settings),
                              current_user: User = Depends(get_current_user)):
     logger.info(f"Reanalyzing contract: {contract_id}")

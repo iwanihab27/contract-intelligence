@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_SOCKET_TIMEOUT: int = 5
+    REDIS_MAX_CONNECTIONS: int = 10
+
     def get_allowed_extensions(self) -> list[str]:
         return [ext.strip() for ext in self.ALLOWED_EXTENSIONS.split(",")]
 

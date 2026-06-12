@@ -3,10 +3,12 @@ import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from src.controllers.base_controller import BaseController
-from src.controllers.cohere_controller import CohereController
+from src.controllers.embedding_controller import EmbeddingController
 from src.controllers.qdrant_controller import QdrantController
 from src.controllers.LLM.llm_controller import LLMController
+from src.controllers.cache_controller import CacheController
 from src.core.config import Settings
+from src.core.cache import get_redis
 from src.models.contract import Contract
 from src.models.chunk import Chunk
 from src.models.chat_history import ChatHistory
@@ -17,9 +19,10 @@ logger = logging.getLogger(__name__)
 class QueryController(BaseController):
     def __init__(self, db: AsyncSession, settings: Settings):
         super().__init__(db, settings)
-        self.cohere = CohereController(db=db, settings=settings)
+        self.embedding = EmbeddingController(db=db, settings=settings)
         self.qdrant = QdrantController(db=db, settings=settings)
         self.llm = LLMController(db=db, settings=settings)
+        self.cache = CacheController(get_redis())
 
     async def query(self, contract_id: str, question: str):
         result = await self.db.execute(select(Contract).where(Contract.uuid == contract_id))
@@ -27,11 +30,16 @@ class QueryController(BaseController):
         if not contract:
             return False, "Contract not found", None
 
-        dense_vector = await self.cohere.embed_query(question)
+        cached = await self.cache.get_query(contract_id, question)
+        if cached:
+            return True, "Query answered successfully (cached)", cached
+
+        dense_vector = await self.embedding.embed_query(question)
         results = await self.qdrant.search(dense_vector, question, limit=15)
         chunks = await self.get_context_chunks(results)
         answer = await self.llm.answer_question(question, chunks, contract.name)
 
+        await self.cache.set_query(contract_id, question, answer)
         await self.save_chat_history(contract.id, question, answer)
 
         return True, "Query answered successfully", answer

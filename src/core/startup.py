@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from src.core.database import Base, engine
+from src.core.cache import init_redis, close_redis
 from src.routes.health import router as health_router
 from src.routes.upload import router as upload_router
 from src.routes.process import router as process_router
