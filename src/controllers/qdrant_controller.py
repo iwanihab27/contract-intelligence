@@ -5,7 +5,8 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import (
     VectorParams, Distance, PointStruct,
     SparseVectorParams, SparseVector,
-    Prefetch, FusionQuery, Fusion
+    Prefetch, FusionQuery, Fusion,
+    Filter, FieldCondition, MatchValue
 )
 from fastembed import SparseTextEmbedding
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +14,7 @@ from src.controllers.base_controller import BaseController
 from src.core.config import Settings
 
 logger = logging.getLogger(__name__)
+
 
 class QdrantController(BaseController):
     def __init__(self, db: AsyncSession, settings: Settings):
@@ -69,8 +71,22 @@ class QdrantController(BaseController):
             collection_name=self.collection,
             points=points
         )
-        await self.db.commit()
         logger.info(f"Stored {len(points)} vectors in Qdrant")
+
+    async def delete_by_contract(self, contract_id: int):
+        await asyncio.to_thread(
+            self.client.delete,
+            collection_name=self.collection,
+            points_selector=Filter(
+                must=[
+                    FieldCondition(
+                        key="contract_id",
+                        match=MatchValue(value=contract_id)
+                    )
+                ]
+            )
+        )
+        logger.info(f"Deleted Qdrant vectors for contract {contract_id}")
 
     async def search(self, dense_vector: list, query_text: str, limit: int = 10) -> list:
         sparse_vector = (await self.embed_sparse([query_text]))[0]

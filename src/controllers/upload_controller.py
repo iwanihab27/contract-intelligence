@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.controllers.base_controller import BaseController
@@ -32,8 +33,11 @@ class UploadController(BaseController):
 
     async def save_file(self, file: UploadFile):
         unique_name = self.generate_hash(file.filename)
-        file_path = os.path.join(self.settings.UPLOAD_DIR, unique_name)
-        os.makedirs(self.settings.UPLOAD_DIR, exist_ok=True)
+
+        project_root = Path(__file__).resolve().parent.parent.parent
+        upload_dir = project_root / self.settings.UPLOAD_DIR
+        file_path = str(upload_dir / unique_name)
+        upload_dir.mkdir(parents=True, exist_ok=True)
 
         content = await file.read()
         with open(file_path, "wb") as f:

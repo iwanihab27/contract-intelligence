@@ -1,8 +1,10 @@
+import asyncio
+import json
 import logging
 import re
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from src.controllers.base_controller import BaseController
 from src.core.config import Settings
@@ -45,16 +47,43 @@ class ProcessingController(BaseController):
             return False, "Failed to extract text from document"
 
         chunks = await self.chunk_text(text, contract.id)
-        await self.embed_and_store(chunks)
-        await self.analyze(contract, text)
-        await self.update_status(contract, ProcessingEnums.COMPLETED)
 
+        try:
+            await asyncio.gather(
+                self.embed_and_store(chunks),
+                self.analyze(contract, text)
+            )
+        except Exception as e:
+            logger.error(f"Processing failed for contract {contract_id}: {e}")
+            await self.cleanup_failed(contract)
+            return False, f"Processing failed: {str(e)}"
+
+        await self.update_status(contract, ProcessingEnums.COMPLETED)
         return True, "Contract processed successfully"
+
+    async def cleanup_failed(self, contract: Contract):
+        try:
+            await self.qdrant.delete_by_contract(contract.id)
+        except Exception as e:
+            logger.error(f"Qdrant cleanup failed for contract {contract.id}: {e}")
+
+        try:
+            await self.db.rollback()
+        except Exception as e:
+            logger.error(f"DB rollback failed for contract {contract.id}: {e}")
+
+        try:
+            await self.db.execute(delete(Chunk).where(Chunk.contract_id == contract.id))
+            await self.db.execute(delete(RiskScore).where(RiskScore.contract_id == contract.id))
+            await self.db.commit()
+        except Exception as e:
+            logger.error(f"Chunk cleanup failed for contract {contract.id}: {e}")
+
+        await self.update_status(contract, ProcessingEnums.FAILED)
 
     async def update_status(self, contract: Contract, status: ProcessingEnums):
         contract.status = status
         await self.db.commit()
-        await self.db.refresh(contract)
 
     def load_document(self, file_path: str) -> str:
         ext = Path(file_path).suffix.lower()
@@ -79,7 +108,8 @@ class ProcessingController(BaseController):
         if len(sections) <= 1:
             sections = [text]
 
-        chunks = []
+        parents = []
+        sections_data = []
 
         for section in sections:
             lines = section.split("\n")
@@ -96,10 +126,14 @@ class ProcessingController(BaseController):
                 section_title=section_title,
             )
             self.db.add(parent)
-            await self.db.flush()
+            parents.append(parent)
+            sections_data.append((section_title, section_text))
 
+        await self.db.flush()
+
+        chunks = []
+        for parent, (section_title, section_text) in zip(parents, sections_data):
             child_texts = self.splitter.split_text(section_text)
-
             for child_text in child_texts:
                 if len(child_text.split()) < 10:
                     continue
@@ -119,9 +153,12 @@ class ProcessingController(BaseController):
 
     async def embed_and_store(self, chunks: list):
         texts = [chunk.text for chunk in chunks]
-        dense_vectors = await self.embedding.embed_documents(texts)
-        sparse_vectors = await self.qdrant.embed_sparse(texts)
-        await self.qdrant.ensure_collection()
+
+        dense_vectors, sparse_vectors = await asyncio.gather(
+            self.embedding.embed_documents(texts),
+            self.qdrant.embed_sparse(texts)
+        )
+
         await self.qdrant.store_chunks(chunks, dense_vectors, sparse_vectors)
 
     async def analyze(self, contract: Contract, text: str):
@@ -130,7 +167,6 @@ class ProcessingController(BaseController):
         contract.summary = result.get("summary")
         contract.overall_risk_score = result.get("overall_risk_score")
         contract.contract_type = result.get("contract_type", "other")
-        await self.db.commit()
 
         risk = RiskScore(
             contract_id=contract.id,
@@ -140,8 +176,9 @@ class ProcessingController(BaseController):
             non_compete_score=result.get("non_compete_score"),
             payment_score=result.get("payment_score"),
             auto_renewal_score=result.get("auto_renewal_score"),
-            red_flags=str(result.get("red_flags", []))
+            red_flags=json.dumps(result.get("red_flags", []))
         )
         self.db.add(risk)
+
         await self.db.commit()
         logger.info(f"Analysis completed for contract: {contract.id}")
