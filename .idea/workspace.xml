@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e91baed-e222-4e92-ab5e-1ac6d6fce80f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/processing_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/processing_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/qdrant_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/qdrant_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controllers/upload_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controllers/upload_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/cache.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/cache.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/startup.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/startup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="5e91baed-e222-4e92-ab5e-1ac6d6fce80f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
