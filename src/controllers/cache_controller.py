@@ -1,7 +1,7 @@
 import json
 import hashlib
 import logging
-import redis.asyncio as aioredis
+import redis.asyncio as redis
 
 logger = logging.getLogger(__name__)
 
@@ -11,8 +11,8 @@ class CacheController:
     EMBEDDING_TTL = 60 * 60 * 24
     CONTRACTS_TTL = 30
 
-    def __init__(self, redis: aioredis.Redis):
-        self.redis = redis
+    def __init__(self, redis_client: redis.Redis):
+        self.redis = redis_client
 
     def query_key(self, contract_id: str, question: str) -> str:
         h = hashlib.sha256(question.encode()).hexdigest()[:16]

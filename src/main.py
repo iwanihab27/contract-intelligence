@@ -12,6 +12,8 @@ from src.enums import ResponseEnums
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from src.core.limiter import limiter
+from redis.exceptions import RedisError
+from fastapi import status
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +54,13 @@ async def global_exception_handler(request: Request, exc: Exception):
         content={"signal": ResponseEnums.ERROR.value}
     )
 
+@app.exception_handler(RedisError)
+async def redis_exception_handler(request: Request, exc: RedisError):
+    logger.error(f"Redis error on {request.url}: {exc}")
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={"signal": ResponseEnums.ERROR.value}
+    )
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):

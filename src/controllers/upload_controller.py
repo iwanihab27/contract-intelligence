@@ -12,7 +12,7 @@ class UploadController(BaseController):
     def __init__(self, db: AsyncSession, settings: Settings):
         super().__init__(db, settings)
 
-    def validate_file(self, file: UploadFile):
+    async def validate_file(self, file: UploadFile):
         ext = os.path.splitext(file.filename)[1].lower()
         file.file.seek(0, 2)
         size_mb = file.file.tell() / self.MB
