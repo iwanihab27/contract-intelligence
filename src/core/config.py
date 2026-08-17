@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     COHERE_API_KEY: str
 
     GROQ_API_KEY: str
+    GROQ_MAX_CONTEXT_TOKENS: int = 7000
     OPENAI_API_KEY: str = ""
 
     LLM_PROVIDER: LLMProvider = LLMProvider.GROQ
@@ -31,12 +32,14 @@ class Settings(BaseSettings):
 
     ALLOWED_EXTENSIONS: str = ".pdf,.docx,.doc,.txt"
 
+    PARENT_CHUNK_CHARS: int = 8000
     CHILD_CHUNK_WORDS: int = 100
     CHUNK_OVERLAP_SENTENCES: int = 2
 
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     REDIS_URL: str = "redis://localhost:6379/0"
     REDIS_SOCKET_TIMEOUT: int = 5

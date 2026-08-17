@@ -3,7 +3,7 @@ from fastapi import status
 from fastapi.responses import JSONResponse
 from sqlalchemy.future import select
 from src.models.user import User
-from src.core.security import get_password_hash, verify_password, create_access_token
+from src.core.security import get_password_hash, verify_password, create_access_token, decode_token, create_refresh_token
 from src.controllers.base_controller import BaseController
 from src.enums.user_enums import UserEnums
 from fastapi.security import OAuth2PasswordRequestForm
@@ -41,9 +41,13 @@ class UserController(BaseController):
         if not user or not verify_password(password, user.hashed_password):
             return False, UserEnums.INVALID_CREDENTIALS.value
 
-        token = create_access_token(subject=user.id)
+        access_token = create_access_token(subject=user.id)
+        refresh_token =  create_refresh_token(subject=user.id)
         logger.info(f"User logged in: {user.username}")
-        return True, {"access_token": token, "token_type": "bearer"}
+        return True, {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer"}
 
     async def get_user(self, user_id: str):
         query = select(User).where(User.id == user_id)
@@ -63,3 +67,26 @@ class UserController(BaseController):
         await self.db.commit()
         logger.info(f"User deleted: {user_id}")
         return True, UserEnums.ACCOUNT_DELETED.value
+
+    async def refresh_access_token(self, refresh_token: str):
+        payload = decode_token(refresh_token)
+
+        if not payload or payload.get("type") != "refresh":
+            return False, "INVALID_REFRESH_TOKEN"
+
+        user_id = payload.get("sub")
+        if not user_id:
+            return False, "INVALID_REFRESH_TOKEN"
+
+        query = select(User).where(User.id == user_id)
+        result = await self.db.execute(query)
+        user = result.scalar_one_or_none()
+
+        if not user or not user.is_active:
+            return False, "INVALID_REFRESH_TOKEN"
+
+        new_access_token = create_access_token(subject=user.id)
+        return True, {
+            "access_token": new_access_token,
+            "token_type": "bearer",
+        }

@@ -24,7 +24,7 @@ async def upload_contract(request: Request, contract: ContractCreate = Depends()
     logger.info(f"Uploading contract: {contract.name}")
     controller = UploadController(db=db, settings=settings)
 
-    is_valid, result_signal = controller.validate_file(file)
+    is_valid, result_signal = await controller.validate_file(file)
     if not is_valid:
         logger.error(f"File validation failed: {result_signal}")
         return JSONResponse(

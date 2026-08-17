@@ -119,15 +119,19 @@ class ProcessingController(BaseController):
             if not section_text:
                 section_text = section
 
-            parent = Chunk(
-                contract_id=contract_id,
-                chunk_type=ChunkEnums.PARENT,
-                text=section_text,
-                section_title=section_title,
-            )
-            self.db.add(parent)
-            parents.append(parent)
-            sections_data.append((section_title, section_text))
+            pieces = self.splitter.split_text(section_text) if len(section_text) > self.settings.PARENT_CHUNK_CHARS else [section_text]
+
+            for i, piece in enumerate(pieces):
+                title = section_title if i == 0 else f"{section_title} (cont. {i+1})"
+                parent = Chunk(
+                    contract_id=contract_id,
+                    chunk_type=ChunkEnums.PARENT,
+                    text=piece,
+                    section_title=title,
+                )
+                self.db.add(parent)
+                parents.append(parent)
+                sections_data.append((title, piece))
 
         await self.db.flush()
 

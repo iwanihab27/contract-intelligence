@@ -35,7 +35,7 @@ class QueryController(BaseController):
             return True, "Query answered successfully (cached)", cached
 
         dense_vector = await self.embedding.embed_query(question)
-        results = await self.qdrant.search(dense_vector, question, limit=15)
+        results = await self.qdrant.search(dense_vector, question, limit=8)
         chunks = await self.get_context_chunks(results)
         answer = await self.llm.answer_question(question, chunks, contract.name)
 
@@ -45,14 +45,18 @@ class QueryController(BaseController):
         return True, "Query answered successfully", answer
 
     async def get_context_chunks(self, results: list) -> list:
+        seen_parents = set()
         context = []
         for result in results:
             parent_id = result.payload.get("parent_id")
             if parent_id:
+                if parent_id in seen_parents:
+                    continue
                 chunk_result = await self.db.execute(select(Chunk).where(Chunk.id == parent_id))
                 parent = chunk_result.scalar_one_or_none()
                 if parent:
                     result.payload["text"] = parent.text
+                    seen_parents.add(parent_id)
             context.append(result)
         return context
 

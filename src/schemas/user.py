@@ -25,3 +25,10 @@ class UserResponse(UserBase):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class TokenRefreshRequest(BaseModel):
+    refresh_token: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

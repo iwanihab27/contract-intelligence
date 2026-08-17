@@ -8,9 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class GroqProvider(BaseLLMProvider):
-    def __init__(self, api_key: str, model: str):
+    def __init__(self, api_key: str, model: str, max_context_tokens: int = 10000):
         self.client = Groq(api_key=api_key)
         self.model = model
+        self.max_context_tokens = max_context_tokens
 
     async def analyze_contract(self, text: str) -> dict:
         prompt = f"""
@@ -39,10 +40,9 @@ class GroqProvider(BaseLLMProvider):
         return parse_json(response.choices[0].message.content)
 
     async def answer_question(self, question: str, chunks: list, contract_name: str) -> dict:
-        context = "\n\n".join([
-            f"[{c.payload.get('section_title', 'Unknown')}]: {c.payload.get('text', '')}"
-            for c in chunks
-        ])
+        logger.info(f"answer_question received {len(chunks)} chunks")
+        context = self._build_context(chunks)
+
         prompt = f"""
         You are a contract analyst protecting the user's interests.
 
@@ -76,6 +76,27 @@ class GroqProvider(BaseLLMProvider):
         )
         logger.info("Groq: question answered")
         return parse_json(response.choices[0].message.content)
+
+    def _build_context(self, chunks: list) -> str:
+        parts = []
+        total_tokens = 0
+
+        for c in chunks:
+            entry = f"[{c.payload.get('section_title', 'Unknown')}]: {c.payload.get('text', '')}"
+            entry_tokens = len(entry) // 4
+
+            logger.info(f"chunk section={c.payload.get('section_title')}, chars={len(entry)}, est_tokens={entry_tokens}")
+
+            if total_tokens + entry_tokens > self.max_context_tokens:
+                logger.warning(f"BREAK: chunk alone={entry_tokens} tokens vs remaining budget={self.max_context_tokens - total_tokens}")
+                break
+
+            parts.append(entry)
+            total_tokens += entry_tokens
+
+        context = "\n\n".join(parts)
+        logger.info(f"final: {len(parts)}/{len(chunks)} chunks used, {len(context)} chars")
+        return context
 
 
 def parse_json(text: str) -> dict:

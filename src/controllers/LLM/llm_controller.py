@@ -23,6 +23,7 @@ class LLMController(BaseController):
             logger.info("LLM provider: Groq")
             return GroqProvider(
                 api_key=self.settings.GROQ_API_KEY,
+                max_context_tokens=self.settings.GROQ_MAX_CONTEXT_TOKENS,
                 model=self.settings.GROQ_MODEL
             )
         elif provider == LLMProvider.OPENAI:

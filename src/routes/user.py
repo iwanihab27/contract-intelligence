@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import get_db
 from src.core.config import settings
 from src.controllers.user_controller import UserController
-from src.schemas.user import UserCreate, UserLogin, UserResponse
+from src.schemas.user import UserCreate, UserLogin, UserResponse, TokenRefreshRequest
 from fastapi.security import OAuth2PasswordRequestForm
 from src.core.limiter import limiter
 from fastapi import Request
@@ -60,3 +60,17 @@ async def delete_account(request: Request, user_id: str, db: AsyncSession = Depe
         return JSONResponse(status_code=404, content={"fail": False, "message": result})
 
     return {"success": True, "message": result}
+
+@router.post("/refresh")
+@limiter.limit("10/minute")
+async def refresh_token(request: Request,body: TokenRefreshRequest, db: AsyncSession = Depends(get_db)):
+    controller = UserController(db=db, settings=settings)
+    success, result = await controller.refresh_access_token(body.refresh_token)
+
+    if not success:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"success": False, "message": result}
+        )
+
+    return {"success": True, **result}

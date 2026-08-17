@@ -1,13 +1,10 @@
 import asyncio
 import logging
 import uuid
+from asyncio import timeout
 from qdrant_client import QdrantClient
-from qdrant_client.models import (
-    VectorParams, Distance, PointStruct,
-    SparseVectorParams, SparseVector,
-    Prefetch, FusionQuery, Fusion,
-    Filter, FieldCondition, MatchValue
-)
+from qdrant_client.models import (VectorParams, Distance, PointStruct,SparseVectorParams, SparseVector,
+                                  Prefetch, FusionQuery, Fusion,Filter, FieldCondition, MatchValue)
 from fastembed import SparseTextEmbedding
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.controllers.base_controller import BaseController
@@ -21,7 +18,8 @@ class QdrantController(BaseController):
         super().__init__(db, settings)
         self.client = QdrantClient(
             url=self.settings.QDRANT_URL,
-            api_key=self.settings.QDRANT_API_KEY
+            api_key=self.settings.QDRANT_API_KEY,
+            timeout=60.0
         )
         self.collection = self.settings.QDRANT_COLLECTION_NAME
         self.sparse_model = SparseTextEmbedding(model_name="prithivida/Splade_PP_en_v1")
@@ -88,7 +86,7 @@ class QdrantController(BaseController):
         )
         logger.info(f"Deleted Qdrant vectors for contract {contract_id}")
 
-    async def search(self, dense_vector: list, query_text: str, limit: int = 10) -> list:
+    async def search(self, dense_vector: list, query_text: str, limit: int = 5) -> list:
         sparse_vector = (await self.embed_sparse([query_text]))[0]
         results = await asyncio.to_thread(
             self.client.query_points,

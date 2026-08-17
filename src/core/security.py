@@ -3,7 +3,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from jose import jwt, JWTError
+import jwt
+from jwt.exceptions import PyJWTError
 from passlib.context import CryptContext
 from src.core.config import settings
 from src.core.database import get_db
@@ -23,16 +24,30 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 def create_access_token(subject) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload = {"sub": str(subject), "exp": expire}
-    return jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    payload = {"sub": str(subject), "exp": expire, "type": "access"}
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return token
 
 
-def decode_access_token(token: str):
+def create_refresh_token(subject) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    payload = {"sub": str(subject), "exp": expire, "type": "refresh"}
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return token
+
+
+def decode_token(token: str) -> dict | None:
     try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        return payload.get("sub")
-    except JWTError:
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    except PyJWTError:
         return None
+
+
+def decode_access_token(token: str) -> str | None:
+    payload = decode_token(token)
+    if not payload or payload.get("type") != "access":
+        return None
+    return payload.get("sub")
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme),db: AsyncSession = Depends(get_db)):
